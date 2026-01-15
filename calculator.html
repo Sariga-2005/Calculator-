@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator & String Operations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1E1E1E;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px #000000;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #F5F5F5;
+            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: #2A2A2A;
+            color: #B0B0B0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+        
+        .tab.active {
+            background: #F5F5F5;
+            color: #121212;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Calculator Styles */
+       .calc-display {
+    background: #2A2A2A;
+    padding: 15px;
+    font-size: 24px;
+    text-align: right;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 2px solid #000000;
+    min-height: 70px;
+    color: #F5F5F5;
+
+    /* FORCE NO SCROLL */
+    overflow: hidden !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.calc-display {
+    font-size: clamp(16px, 3vw, 24px);
+}
+
+
+
+        
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .calc-buttons button {
+            padding: 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .calc-num {
+            background: #F5F5F5;
+            color: #121212;
+        }
+        
+        .calc-op {
+            background: #B0B0B0;
+            color: #121212;
+        }
+        
+        .calc-clear {
+            background: #B0B0B0;
+            color: #121212;
+        }
+        
+        .calc-equal {
+    background: #FFFFFF;
+    color: #121212;
+}
+
+        
+        .calc-mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #2A2A2A;
+            color: #B0B0B0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .calc-mode-btn.active {
+            background: #F5F5F5;
+            color: #121212;
+        }
+        
+        .calc-sci {
+            background: #3A3A3A;
+            color: #F5F5F5;
+            font-size: 14px;
+        }
+        
+        .calc-sci:hover {
+            background: #4A4A4A;
+        }
+        
+        .choice-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .choice-title {
+            font-size: 24px;
+            color: #F5F5F5;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .choice-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .choice-btn {
+            padding: 25px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #B0B0B0;
+            background: #2A2A2A;
+            color: #F5F5F5;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .choice-btn:hover {
+            background: #F5F5F5;
+            color: #121212;
+            border-color: #F5F5F5;
+            transform: scale(1.05);
+        }
+        
+        .choice-btn.small {
+            padding: 15px 25px;
+            font-size: 16px;
+        }
+        
+        .string-input-screen {
+            display: none;
+        }
+        
+        .string-input-screen.active {
+            display: block;
+        }
+        
+        .string-values {
+            background: #2A2A2A;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #000000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .string-item {
+            margin-bottom: 15px;
+        }
+        
+        .string-label {
+            font-size: 14px;
+            color: #F5F5F5;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .string-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #B0B0B0;
+            border-radius: 8px;
+            font-family: monospace;
+            background: #1E1E1E;
+            color: #F5F5F5;
+        }
+        
+        .string-input:focus {
+            outline: none;
+            border-color: #F5F5F5;
+            box-shadow: 0 0 0 3px rgba(245, 245, 245, 0.1);
+        }
+        
+        .operations-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #F5F5F5;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .string-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .string-buttons button {
+            padding: 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #B0B0B0;
+            color: #121212;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .string-buttons button:hover {
+            background: #F5F5F5;
+        }
+        
+        .back-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            background: #B0B0B0;
+            color: #121212;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .result {
+            background: #2A2A2A;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #000000;
+            margin-top: 20px;
+            min-height: 80px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .result-title {
+            font-weight: bold;
+            color: #F5F5F5;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .result-text {
+            color: #F5F5F5;
+            font-size: 16px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+        
+        @media (max-width: 600px) {
+            .calc-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .scientific-calc {
+                grid-template-columns: repeat(5, 1fr) !important;
+            }
+            .calc-buttons button {
+                padding: 15px 10px;
+                font-size: 14px;
+            }
+            .calc-sci {
+                font-size: 12px;
+                padding: 15px 5px;
+            }
+            .string-buttons {
+                grid-template-columns: 1fr;
+            }
+            .choice-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculator & String Tool</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('calculator')">Calculator</button>
+            <button class="tab" onclick="showTab('strings')">String Operations</button>
+        </div>
+        
+        <div id="calculator" class="section active">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="calc-mode-btn active" id="basicMode" onclick="toggleCalcMode('basic')">Basic</button>
+                <button class="calc-mode-btn" id="scientificMode" onclick="toggleCalcMode('scientific')">Scientific</button>
+            </div>
+            
+            <div class="calc-display" id="display">0</div>
+            
+            <div class="calc-buttons" id="basicCalc">
+                <button class="calc-clear" onclick="clearCalc()">C</button>
+                <button class="calc-op" onclick="addToCalc('(')">(</button>
+                <button class="calc-op" onclick="addToCalc(')')">)</button>
+                <button class="calc-op" onclick="addToCalc('/')">÷</button>
+                
+                <button class="calc-num" onclick="addToCalc('7')">7</button>
+                <button class="calc-num" onclick="addToCalc('8')">8</button>
+                <button class="calc-num" onclick="addToCalc('9')">9</button>
+                <button class="calc-op" onclick="addToCalc('*')">×</button>
+                
+                <button class="calc-num" onclick="addToCalc('4')">4</button>
+                <button class="calc-num" onclick="addToCalc('5')">5</button>
+                <button class="calc-num" onclick="addToCalc('6')">6</button>
+                <button class="calc-op" onclick="addToCalc('-')">−</button>
+                
+                <button class="calc-num" onclick="addToCalc('1')">1</button>
+                <button class="calc-num" onclick="addToCalc('2')">2</button>
+                <button class="calc-num" onclick="addToCalc('3')">3</button>
+                <button class="calc-op" onclick="addToCalc('+')">+</button>
+                
+                <button class="calc-num" onclick="addToCalc('0')">0</button>
+                <button class="calc-num" onclick="addToCalc('.')">.</button>
+                <button class="calc-equal" onclick="calculate()">=</button>
+            </div>
+            
+            <div class="calc-buttons scientific-calc" id="scientificCalc" style="display: none; grid-template-columns: repeat(5, 1fr);">
+                <button class="calc-clear" onclick="clearCalc()">C</button>
+                <button class="calc-op" onclick="addToCalc('(')">(</button>
+                <button class="calc-op" onclick="addToCalc(')')">)</button>
+                <button class="calc-op" onclick="backspace()">⌫</button>
+                <button class="calc-op" onclick="addToCalc('/')">÷</button>
+                
+                <button class="calc-sci" onclick="addFunction('Math.sin(')">sin</button>
+                <button class="calc-sci" onclick="addFunction('Math.cos(')">cos</button>
+                <button class="calc-sci" onclick="addFunction('Math.tan(')">tan</button>
+                <button class="calc-num" onclick="addToCalc('7')">7</button>
+                <button class="calc-num" onclick="addToCalc('8')">8</button>
+                
+                <button class="calc-sci" onclick="addFunction('Math.asin(')">asin</button>
+                <button class="calc-sci" onclick="addFunction('Math.acos(')">acos</button>
+                <button class="calc-sci" onclick="addFunction('Math.atan(')">atan</button>
+                <button class="calc-num" onclick="addToCalc('9')">9</button>
+                <button class="calc-op" onclick="addToCalc('*')">×</button>
+                
+                <button class="calc-sci" onclick="addFunction('Math.sqrt(')">√</button>
+                <button class="calc-sci" onclick="addFunction('Math.cbrt(')">∛</button>
+                <button class="calc-sci" onclick="addToCalc('**')">x^y</button>
+                <button class="calc-num" onclick="addToCalc('4')">4</button>
+                <button class="calc-num" onclick="addToCalc('5')">5</button>
+                
+                <button class="calc-sci" onclick="addFunction('Math.log10(')">log</button>
+                <button class="calc-sci" onclick="addFunction('Math.log(')">ln</button>
+                <button class="calc-sci" onclick="addFunction('Math.exp(')">e^x</button>
+                <button class="calc-num" onclick="addToCalc('6')">6</button>
+                <button class="calc-op" onclick="addToCalc('-')">−</button>
+                
+                <button class="calc-sci" onclick="addConstant('Math.PI')">π</button>
+                <button class="calc-sci" onclick="addConstant('Math.E')">e</button>
+                <button class="calc-sci" onclick="addFunction('Math.abs(')">|x|</button>
+                <button class="calc-num" onclick="addToCalc('1')">1</button>
+                <button class="calc-num" onclick="addToCalc('2')">2</button>
+                
+                <button class="calc-sci" onclick="toggleDegRad()">DEG</button>
+                <button class="calc-sci" onclick="factorial()">x!</button>
+                <button class="calc-sci" onclick="addToCalc('%')">%</button>
+                <button class="calc-num" onclick="addToCalc('3')">3</button>
+                <button class="calc-op" onclick="addToCalc('+')">+</button>
+                
+                <button class="calc-sci" onclick="addFunction('1/')">1/x</button>
+                <button class="calc-num" onclick="addToCalc('0')" style="grid-column: span 2;">0</button>
+                <button class="calc-num" onclick="addToCalc('.')">.</button>
+                <button class="calc-equal" onclick="calculate()">=</button>
+                
+                <button class="calc-sci" onclick="addFunction('Math.sinh(')">sinh</button>
+                <button class="calc-sci" onclick="addFunction('Math.cosh(')">cosh</button>
+                <button class="calc-sci" onclick="addFunction('Math.tanh(')">tanh</button>
+                <button class="calc-sci" onclick="addFunction('Math.floor(')">⌊x⌋</button>
+                <button class="calc-sci" onclick="addFunction('Math.ceil(')">⌈x⌉</button>
+                
+                <button class="calc-sci" onclick="addFunction('Math.round(')">round</button>
+                <button class="calc-sci" onclick="addFunction('Math.random()*')">rand</button>
+                <button class="calc-sci" onclick="addToCalc('**2')">x²</button>
+                <button class="calc-sci" onclick="addToCalc('**3')">x³</button>
+                <button class="calc-sci" onclick="addFunction('Math.pow(10,')">10^x</button>
+            </div>
+        </div>
+        
+        <div id="strings" class="section">
+            <div id="choiceScreen" class="choice-screen">
+                <div class="choice-title">What do you want to work with?</div>
+                <div class="choice-buttons">
+                    <button class="choice-btn" onclick="showStringChoice()">String Manipulation Operations</button>
+                    <button class="choice-btn" onclick="selectMode('variables', 0)">String Arithmetic Operations</button>
+                </div>
+            </div>
+            
+            <div id="stringCountScreen" class="choice-screen" style="display: none;">
+                <div class="choice-title">How many strings?</div>
+                <div class="choice-buttons">
+                    <button class="choice-btn small" onclick="selectMode('strings', 1)">1 String</button>
+                    <button class="choice-btn small" onclick="selectMode('strings', 2)">2 Strings</button>
+                    <button class="choice-btn small" onclick="selectMode('strings', 3)">3 Strings</button>
+                    <button class="choice-btn small" onclick="selectMode('strings', 4)">4 Strings</button>
+                    <button class="choice-btn small" onclick="selectMode('strings', 5)">5 Strings</button>
+                </div>
+                <button class="back-btn" onclick="backToMainChoice()" style="margin-top: 20px;">← Back</button>
+            </div>
+            
+            <div id="inputScreen" class="string-input-screen">
+                <button class="back-btn" onclick="goBackToChoice()">← Back to Choice</button>
+                
+                <div class="string-values" id="stringInputs">
+                </div>
+                
+                <div class="operations-title">Select Operation:</div>
+                
+                <div class="string-buttons" id="operationButtons">
+                </div>
+                
+                <div class="result" id="resultBox">
+                    <div class="result-title">Result:</div>
+                    <div class="result-text" id="result">Choose your mode and start typing!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let calcDisplay = '0';
+        let numStrings = 0;
+        let strings = [];
+        let mode = 'strings';
+        let isDegree = true;
+        let calcMode = 'basic';
+        
+        function toggleCalcMode(newMode) {
+            calcMode = newMode;
+            document.getElementById('basicMode').classList.toggle('active', newMode === 'basic');
+            document.getElementById('scientificMode').classList.toggle('active', newMode === 'scientific');
+            document.getElementById('basicCalc').style.display = newMode === 'basic' ? 'grid' : 'none';
+            document.getElementById('scientificCalc').style.display = newMode === 'scientific' ? 'grid' : 'none';
+        }
+        
+        function toggleDegRad() {
+            isDegree = !isDegree;
+            const btn = event.target;
+            btn.textContent = isDegree ? 'DEG' : 'RAD';
+        }
+        
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+        
+        function toDegrees(radians) {
+            return radians * (180 / Math.PI);
+        }
+        
+        function addFunction(func) {
+            if (calcDisplay === '0' || calcDisplay === 'Error') {
+                calcDisplay = func;
+            } else {
+                calcDisplay += func;
+            }
+            document.getElementById('display').textContent = calcDisplay;
+        }
+        
+        function addConstant(constant) {
+            if (calcDisplay === '0' || calcDisplay === 'Error') {
+                calcDisplay = constant;
+            } else {
+                calcDisplay += constant;
+            }
+            document.getElementById('display').textContent = calcDisplay;
+        }
+        
+        function backspace() {
+            if (calcDisplay.length > 1) {
+                calcDisplay = calcDisplay.slice(0, -1);
+            } else {
+                calcDisplay = '0';
+            }
+            document.getElementById('display').textContent = calcDisplay;
+        }
+        
+        function factorial() {
+            try {
+                let num = eval(calcDisplay);
+                if (num < 0 || !Number.isInteger(num)) {
+                    calcDisplay = 'Error';
+                } else {
+                    let result = 1;
+                    for (let i = 2; i <= num; i++) {
+                        result *= i;
+                    }
+                    calcDisplay = result.toString();
+                }
+                document.getElementById('display').textContent = calcDisplay;
+            } catch {
+                calcDisplay = 'Error';
+                document.getElementById('display').textContent = calcDisplay;
+            }
+        }
+        
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            if (tab === 'calculator') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('calculator').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('strings').classList.add('active');
+                showChoiceScreen();
+            }
+        }
+        
+        function addToCalc(val) {
+            if (calcDisplay === '0' || calcDisplay === 'Error') {
+                calcDisplay = val;
+            } else {
+                calcDisplay = (calcDisplay + val).slice(0, 120);
+
+            }
+            document.getElementById('display').textContent = calcDisplay;
+        }
+        
+        function clearCalc() {
+            calcDisplay = '0';
+            document.getElementById('display').textContent = calcDisplay;
+        }
+        
+        function calculate() {
+            try {
+                let expression = calcDisplay;
+                
+                // Handle degree/radian conversion for trig functions
+                if (isDegree) {
+                    expression = expression.replace(/Math\.sin\(/g, 'Math.sin(toRadians(');
+                    expression = expression.replace(/Math\.cos\(/g, 'Math.cos(toRadians(');
+                    expression = expression.replace(/Math\.tan\(/g, 'Math.tan(toRadians(');
+                    
+                    // Count opening parentheses for trig functions
+                    const sinCount = (expression.match(/Math\.sin\(toRadians\(/g) || []).length;
+                    const cosCount = (expression.match(/Math\.cos\(toRadians\(/g) || []).length;
+                    const tanCount = (expression.match(/Math\.tan\(toRadians\(/g) || []).length;
+                    
+                    // Add extra closing parentheses
+                    for (let i = 0; i < sinCount + cosCount + tanCount; i++) {
+                        expression += ')';
+                    }
+                }
+                
+                // Handle inverse trig functions (always return degrees if in degree mode)
+                const result = eval(expression);
+                
+                if (isDegree && (calcDisplay.includes('asin') || calcDisplay.includes('acos') || calcDisplay.includes('atan'))) {
+                    calcDisplay = toDegrees(result).toString();
+                } else {
+                    calcDisplay = result.toString();
+                }
+                
+                document.getElementById('display').textContent = calcDisplay;
+            } catch {
+                calcDisplay = 'Error';
+                document.getElementById('display').textContent = calcDisplay;
+            }
+        }
+        
+        function showChoiceScreen() {
+            document.getElementById('choiceScreen').style.display = 'block';
+            document.getElementById('stringCountScreen').style.display = 'none';
+            document.getElementById('inputScreen').classList.remove('active');
+        }
+        
+        function showStringChoice() {
+            document.getElementById('choiceScreen').style.display = 'none';
+            document.getElementById('stringCountScreen').style.display = 'block';
+        }
+        
+        function backToMainChoice() {
+            document.getElementById('stringCountScreen').style.display = 'none';
+            document.getElementById('choiceScreen').style.display = 'block';
+        }
+        
+        function goBackToChoice() {
+            showChoiceScreen();
+        }
+        
+        function selectMode(modeType, num) {
+            mode = modeType;
+            numStrings = num;
+            document.getElementById('choiceScreen').style.display = 'none';
+            document.getElementById('stringCountScreen').style.display = 'none';
+            document.getElementById('inputScreen').classList.add('active');
+            createStringInputs();
+        }
+        
+        function createStringInputs() {
+            const container = document.getElementById('stringInputs');
+            const buttonContainer = document.getElementById('operationButtons');
+            container.innerHTML = '';
+            buttonContainer.innerHTML = '';
+            strings = [];
+            
+            if (mode === 'variables') {
+                container.innerHTML = `
+                    <div class="string-item">
+                        <div class="string-label">Assign Variables (one per line):</div>
+                        <textarea class="string-input" id="varInput" rows="6" placeholder="Example:
+a = 8
+b = 9
+c = 10" oninput="updateVariables()" style="font-family: monospace; min-height: 150px;"></textarea>
+                    </div>
+                `;
+                
+                buttonContainer.innerHTML = `
+                    <button onclick="doStringOp('add')">Add</button>
+                    <button onclick="doStringOp('subtract')">Subtract</button>
+                    <button onclick="doStringOp('multiply')">Multiply</button>
+                    <button onclick="doStringOp('divide')">Divide</button>
+                    <button onclick="doStringOp('modulo')">Modulo</button>
+                    <button onclick="doStringOp('power')">Power</button>
+                    <button onclick="doStringOp('compare')">Show Variables</button>
+                `;
+            } else {
+                for (let i = 0; i < numStrings; i++) {
+                    container.innerHTML += `
+                        <div class="string-item">
+                            <div class="string-label">String ${i + 1}:</div>
+                            <input type="text"
+                                   class="string-input"
+                                   placeholder="Type string ${i + 1}..."
+                                   oninput="updateStrings()"
+                                   data-index="${i}">
+                        </div>
+                    `;
+                }
+                
+                buttonContainer.innerHTML = `
+                    <button onclick="doStringOp('length')">Length</button>
+                    <button onclick="doStringOp('upper')">UPPERCASE</button>
+                    <button onclick="doStringOp('lower')">lowercase</button>
+                    <button onclick="doStringOp('reverse')">Reverse</button>
+                    <button onclick="doStringOp('concat')">Concatenate All</button>
+                    <button onclick="doStringOp('trim')">Trim Spaces</button>
+                    <button onclick="doStringOp('replace')">Replace Text</button>
+                    <button onclick="doStringOp('split')">Split Words</button>
+                    <button onclick="doStringOp('charAt')">Character At</button>
+                    <button onclick="doStringOp('indexOf')">Find Index</button>
+                    <button onclick="doStringOp('substring')">Get Substring</button>
+                    <button onclick="doStringOp('repeat')">Repeat Text</button>
+                    <button onclick="doStringOp('startsWith')">Starts With?</button>
+                    <button onclick="doStringOp('endsWith')">Ends With?</button>
+                    <button onclick="doStringOp('includes')">Contains?</button>
+                    <button onclick="doStringOp('slice')">Slice Text</button>
+                    <button onclick="doStringOp('capitalize')">Capitalize</button>
+                    <button onclick="doStringOp('title')">Title Case</button>
+                    <button onclick="doStringOp('countWords')">Count Words</button>
+                    <button onclick="doStringOp('countChars')">Count Characters</button>
+                    <button onclick="doStringOp('removeSpaces')">Remove Spaces</button>
+                    <button onclick="doStringOp('isPalindrome')">Check Palindrome</button>
+                    <button onclick="doStringOp('compare')">Compare All</button>
+                    <button onclick="doStringOp('sort')">Sort Strings</button>
+                    <button onclick="doStringOp('countVowels')">Count Vowels</button>
+                    <button onclick="doStringOp('countConsonants')">Count Consonants</button>
+                    <button onclick="doStringOp('extractNumbers')">Extract Numbers</button>
+                    <button onclick="doStringOp('removeNumbers')">Remove Numbers</button>
+                    <button onclick="doStringOp('swapCase')">Swap Case</button>
+                    <button onclick="doStringOp('alternateCase')">Alternate Case</button>
+                    <button onclick="doStringOp('removeVowels')">Remove Vowels</button>
+                    <button onclick="doStringOp('removeDuplicates')">Remove Duplicates</button>
+                    <button onclick="doStringOp('camelCase')">camelCase</button>
+                    <button onclick="doStringOp('snakeCase')">snake_case</button>
+                    <button onclick="doStringOp('kebabCase')">kebab-case</button>
+                    <button onclick="doStringOp('encrypt')">Simple Encrypt</button>
+                    <button onclick="doStringOp('base64Encode')">Base64 Encode</button>
+                    <button onclick="doStringOp('base64Decode')">Base64 Decode</button>
+                `;
+            }
+            updateStrings();
+        }
+        
+        function updateStrings() {
+            if (mode === 'variables') return;
+            
+            strings = [];
+            document.querySelectorAll('.string-input').forEach(input => {
+                const index = input.dataset.index;
+                if (index !== undefined) {
+                    strings[index] = input.value || '';
+                }
+            });
+        }
+        
+        function updateVariables() {
+            const varInput = document.getElementById('varInput');
+            if (!varInput) return;
+            
+            const lines = varInput.value.split('\n');
+            const vars = {};
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (line && line.includes('=')) {
+                    const parts = line.split('=');
+                    const varName = parts[0].trim();
+                    const varValue = parts[1].trim();
+                    vars[varName] = varValue;
+                }
+            }
+            
+            window.currentVars = vars;
+        }
+        
+        function scrollToResult() {
+            const resultBox = document.getElementById('resultBox');
+            if (!resultBox) return;
+            
+            setTimeout(() => {
+                resultBox.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 50);
+        }
+        
+        function doStringOp(op) {
+            updateStrings();
+            if (mode === 'variables') updateVariables();
+            let result = '';
+            
+            if (mode === 'variables') {
+                const vars = window.currentVars || {};
+                const varNames = Object.keys(vars);
+                
+                if (varNames.length === 0) {
+                    result = 'Please assign variables first!\n\nExample:\na = 8\nb = 9';
+                    document.getElementById('result').textContent = result;
+                    scrollToResult();
+                    return;
+                }
+                
+                const numVars = {};
+                for (let name in vars) {
+                    numVars[name] = parseFloat(vars[name]) || 0;
+                }
+                
+                switch(op) {
+                    case 'add':
+                        if (varNames.length < 2) {
+                            result = 'Need at least 2 variables!';
+                        } else {
+                            const sum = Object.values(numVars).reduce((a, b) => a + b, 0);
+                            result = `Sum of all variables:\n\n`;
+                            for (let name in numVars) {
+                                result += `${name} = ${numVars[name]}\n`;
+                            }
+                            result += `\nResult = ${sum}`;
+                        }
+                        break;
+                    case 'subtract':
+                        if (varNames.length < 2) {
+                            result = 'Need at least 2 variables!';
+                        } else {
+                            const first = numVars[varNames[0]];
+                            let diff = first;
+                            result = `${varNames[0]} = ${first}\n`;
+                            for (let i = 1; i < varNames.length; i++) {
+                                const name = varNames[i];
+                                diff -= numVars[name];
+                                result += `${name} = ${numVars[name]}\n`;
+                            }
+                            result += `\nResult = ${diff}`;
+                        }
+                        break;
+                    case 'multiply':
+                        if (varNames.length < 2) {
+                            result = 'Need at least 2 variables!';
+                        } else {
+                            const product = Object.values(numVars).reduce((a, b) => a * b, 1);
+                            result = `Product of all variables:\n\n`;
+                            for (let name in numVars) {
+                                result += `${name} = ${numVars[name]}\n`;
+                            }
+                            result += `\nResult = ${product}`;
+                        }
+                        break;
+                    case 'divide':
+                        if (varNames.length < 2) {
+                            result = 'Need at least 2 variables!';
+                        } else {
+                            const first = numVars[varNames[0]];
+                            let quotient = first;
+                            result = `${varNames[0]} = ${first}\n`;
+                            let hasZero = false;
+                            for (let i = 1; i < varNames.length; i++) {
+                                const name = varNames[i];
+                                if (numVars[name] === 0) {
+                                    hasZero = true;
+                                    break;
+                                }
+                                quotient /= numVars[name];
+                                result += `${name} = ${numVars[name]}\n`;
+                            }
+                            result = hasZero ? 'Cannot divide by zero!' : result + `\nResult = ${quotient}`;
+                        }
+                        break;
+                    case 'modulo':
+                        if (varNames.length < 2) {
+                            result = 'Need at least 2 variables!';
+                        } else {
+                            const first = numVars[varNames[0]];
+                            let mod = first;
+                            result = `${varNames[0]} = ${first}\n`;
+                            for (let i = 1; i < varNames.length; i++) {
+                                const name = varNames[i];
+                                if (numVars[name] === 0) {
+                                    result = 'Cannot modulo by zero!';
+                                    break;
+                                }
+                                mod = mod % numVars[name];
+                                result += `${name} = ${numVars[name]}\n`;
+                            }
+                            if (!result.includes('Cannot')) {
+                                result += `\nResult = ${mod}`;
+                            }
+                        }
+                        break;
+                    case 'power':
+                        if (varNames.length < 2) {
+                            result = 'Need at least 2 variables!';
+                        } else {
+                            const first = numVars[varNames[0]];
+                            let pow = first;
+                            result = `${varNames[0]} = ${first}\n`;
+                            for (let i = 1; i < varNames.length; i++) {
+                                const name = varNames[i];
+                                pow = Math.pow(pow, numVars[name]);
+                                result += `${name} = ${numVars[name]}\n`;
+                            }
+                            result += `\nResult = ${pow}`;
+                        }
+                        break;
+                    case 'compare':
+                        result = 'Assigned Variables:\n\n';
+                        for (let name in numVars) {
+                            result += `${name} = ${numVars[name]}\n`;
+                        }
+                        break;
+                }
+                
+                document.getElementById('result').textContent = result || 'Operation complete!';
+                scrollToResult();
+                return;
+            }
+            
+            try {
+                switch(op) {
+                    case 'length':
+                        result = strings.map((s, i) => `String ${i + 1} Length: ${s.length}`).join('\n');
+                        break;
+                    case 'upper':
+                        result = strings.map((s, i) => `String ${i + 1} UPPERCASE:\n${s.toUpperCase()}`).join('\n\n');
+                        break;
+                    case 'lower':
+                        result = strings.map((s, i) => `String ${i + 1} lowercase:\n${s.toLowerCase()}`).join('\n\n');
+                        break;
+                    case 'reverse':
+                        result = strings.map((s, i) => `String ${i + 1} Reversed:\n${s.split('').reverse().join('')}`).join('\n\n');
+                        break;
+                    case 'concat':
+                        result = `Concatenated Result:\n\n${strings.join('')}`;
+                        break;
+                    case 'trim':
+                        result = strings.map((s, i) => `String ${i + 1} Trimmed:\n"${s.trim()}"`).join('\n\n');
+                        break;
+                    case 'replace':
+                        const find = prompt('Find what?', 'o');
+                        const rep = prompt('Replace with?', 'X');
+                        if (find !== null) {
+                            result = strings.map((s, i) => `String ${i + 1}:\n${s.replace(new RegExp(find, 'g'), rep)}`).join('\n\n');
+                        }
+                        break;
+                    case 'split':
+                        result = strings.map((s, i) => `String ${i + 1} Words:\n[${s.split(' ').join(', ')}]`).join('\n\n');
+                        break;
+                    case 'charAt':
+                        const pos = parseInt(prompt('Position (0 is first):', '0'));
+                        if (!isNaN(pos)) {
+                            result = strings.map((s, i) => `String ${i + 1} at ${pos}: "${s.charAt(pos)}"`).join('\n');
+                        }
+                        break;
+                    case 'indexOf':
+                        const searchText = prompt('Search for:', 'o');
+                        if (searchText !== null) {
+                            result = strings.map((s, i) => `String ${i + 1} - "${searchText}" at: ${s.indexOf(searchText)}`).join('\n');
+                        }
+                        break;
+                    case 'substring':
+                        const start = parseInt(prompt('Start position:', '0'));
+                        const end = parseInt(prompt('End position:', '5'));
+                        if (!isNaN(start) && !isNaN(end)) {
+                            result = strings.map((s, i) => `String ${i + 1}:\n${s.substring(start, end)}`).join('\n\n');
+                        }
+                        break;
+                    case 'repeat':
+                        const times = parseInt(prompt('Repeat how many times?', '2'));
+                        if (!isNaN(times)) {
+                            result = strings.map((s, i) => `String ${i + 1}:\n${s.repeat(times)}`).join('\n\n');
+                        }
+                        break;
+                    case 'startsWith':
+                        const prefix = prompt('Check starts with:', 'Hello');
+                        if (prefix !== null) {
+                            result = strings.map((s, i) => `String ${i + 1} starts with "${prefix}": ${s.startsWith(prefix) ? 'YES ✓' : 'NO ✗'}`).join('\n');
+                        }
+                        break;
+                    case 'endsWith':
+                        const suffix = prompt('Check ends with:', 'ld');
+                        if (suffix !== null) {
+                            result = strings.map((s, i) => `String ${i + 1} ends with "${suffix}": ${s.endsWith(suffix) ? 'YES ✓' : 'NO ✗'}`).join('\n');
+                        }
+                        break;
+                    case 'includes':
+                        const check = prompt('Check contains:', 'World');
+                        if (check !== null) {
+                            result = strings.map((s, i) => `String ${i + 1} contains "${check}": ${s.includes(check) ? 'YES ✓' : 'NO ✗'}`).join('\n');
+                        }
+                        break;
+                    case 'slice':
+                        const s1 = parseInt(prompt('Start:', '0'));
+                        const s2 = parseInt(prompt('End:', '5'));
+                        if (!isNaN(s1) && !isNaN(s2)) {
+                            result = strings.map((s, i) => `String ${i + 1}:\n${s.slice(s1, s2)}`).join('\n\n');
+                        }
+                        break;
+                    case 'capitalize':
+                        result = strings.map((s, i) => `String ${i + 1}:\n${s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()}`).join('\n\n');
+                        break;
+                    case 'title':
+                        result = strings.map((s, i) => {
+                            const title = s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                            return `String ${i + 1}:\n${title}`;
+                        }).join('\n\n');
+                        break;
+                    case 'countWords':
+                        result = strings.map((s, i) => `String ${i + 1} word count: ${s.trim().split(/\s+/).filter(w => w).length}`).join('\n');
+                        break;
+                    case 'countChars':
+                        result = strings.map((s, i) => `String ${i + 1} chars (no spaces): ${s.replace(/\s/g, '').length}`).join('\n');
+                        break;
+                    case 'removeSpaces':
+                        result = strings.map((s, i) => `String ${i + 1}:\n${s.replace(/\s/g, '')}`).join('\n\n');
+                        break;
+                    case 'isPalindrome':
+                        result = strings.map((s, i) => {
+                            const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+                            return `String ${i + 1} palindrome: ${clean === clean.split('').reverse().join('') ? 'YES ✓' : 'NO ✗'}`;
+                        }).join('\n');
+                        break;
+                    case 'compare':
+                        const allEqual = strings.every(s => s === strings[0]);
+                        result = strings.map((s, i) => `String ${i + 1}: "${s}" (${s.length} chars)`).join('\n');
+                        result += `\n\nAll Equal: ${allEqual ? 'YES ✓' : 'NO ✗'}`;
+                        break;
+                    case 'sort':
+                        const sorted = [...strings].sort();
+                        result = 'Sorted Alphabetically:\n\n' + sorted.map((s, i) => `${i + 1}. "${s}"`).join('\n');
+                        break;
+                    case 'countVowels':
+                        result = strings.map((s, i) => {
+                            const vowels = s.match(/[aeiouAEIOU]/g);
+                            return `String ${i + 1} vowels: ${vowels ? vowels.length : 0}`;
+                        }).join('\n');
+                        break;
+                    case 'countConsonants':
+                        result = strings.map((s, i) => {
+                            const consonants = s.match(/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/g);
+                            return `String ${i + 1} consonants: ${consonants ? consonants.length : 0}`;
+                        }).join('\n');
+                        break;
+                    case 'extractNumbers':
+                        result = strings.map((s, i) => {
+                            const numbers = s.match(/\d+/g);
+                            return `String ${i + 1} numbers:\n${numbers ? numbers.join(', ') : 'No numbers found'}`;
+                        }).join('\n\n');
+                        break;
+                    case 'removeNumbers':
+                        result = strings.map((s, i) => `String ${i + 1}:\n${s.replace(/\d/g, '')}`).join('\n\n');
+                        break;
+                    case 'swapCase':
+                        result = strings.map((s, i) => {
+                            const swapped = s.split('').map(c => 
+                                c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()
+                            ).join('');
+                            return `String ${i + 1}:\n${swapped}`;
+                        }).join('\n\n');
+                        break;
+                    case 'alternateCase':
+                        result = strings.map((s, i) => {
+                            const alternate = s.split('').map((c, idx) => 
+                                idx % 2 === 0 ? c.toLowerCase() : c.toUpperCase()
+                            ).join('');
+                            return `String ${i + 1}:\n${alternate}`;
+                        }).join('\n\n');
+                        break;
+                    case 'removeVowels':
+                        result = strings.map((s, i) => `String ${i + 1}:\n${s.replace(/[aeiouAEIOU]/g, '')}`).join('\n\n');
+                        break;
+                    case 'removeDuplicates':
+                        result = strings.map((s, i) => {
+                            const unique = [...new Set(s.split(''))].join('');
+                            return `String ${i + 1}:\n${unique}`;
+                        }).join('\n\n');
+                        break;
+                    case 'camelCase':
+                        result = strings.map((s, i) => {
+                            const camel = s.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+                            return `String ${i + 1}:\n${camel}`;
+                        }).join('\n\n');
+                        break;
+                    case 'snakeCase':
+                        result = strings.map((s, i) => {
+                            const snake = s.replace(/\s+/g, '_').toLowerCase();
+                            return `String ${i + 1}:\n${snake}`;
+                        }).join('\n\n');
+                        break;
+                    case 'kebabCase':
+                        result = strings.map((s, i) => {
+                            const kebab = s.replace(/\s+/g, '-').toLowerCase();
+                            return `String ${i + 1}:\n${kebab}`;
+                        }).join('\n\n');
+                        break;
+                    case 'encrypt':
+                        const shift = parseInt(prompt('Caesar cipher shift (1-25):', '3'));
+                        if (!isNaN(shift)) {
+                            result = strings.map((s, i) => {
+                                const encrypted = s.split('').map(c => {
+                                    if (c.match(/[a-z]/i)) {
+                                        const code = c.charCodeAt(0);
+                                        const base = code >= 65 && code <= 90 ? 65 : 97;
+                                        return String.fromCharCode(((code - base + shift) % 26) + base);
+                                    }
+                                    return c;
+                                }).join('');
+                                return `String ${i + 1}:\n${encrypted}`;
+                            }).join('\n\n');
+                        }
+                        break;
+                    case 'base64Encode':
+                        result = strings.map((s, i) => {
+                            try {
+                                const encoded = btoa(s);
+                                return `String ${i + 1}:\n${encoded}`;
+                            } catch (e) {
+                                return `String ${i + 1}: Error encoding`;
+                            }
+                        }).join('\n\n');
+                        break;
+                    case 'base64Decode':
+                        result = strings.map((s, i) => {
+                            try {
+                                const decoded = atob(s);
+                                return `String ${i + 1}:\n${decoded}`;
+                            } catch (e) {
+                                return `String ${i + 1}: Invalid base64`;
+                            }
+                        }).join('\n\n');
+                        break;
+                }
+                document.getElementById('result').textContent = result || 'Operation complete!';
+                scrollToResult();
+            } catch(e) {
+                document.getElementById('result').textContent = 'Error: ' + e.message;
+                scrollToResult();
+            }
+        }
+    </script>
+</body>
+</html>
